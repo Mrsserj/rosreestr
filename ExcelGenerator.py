@@ -1,5 +1,5 @@
 #!/bin/env python
-# -*- coding: utf-8-sig -*-
+# -*- coding: utf-8 -*-
 
 import xml.etree.ElementTree as ET
 import sys, os, zipfile, datetime, platform
@@ -333,15 +333,15 @@ for x in valid_files:
         table[int(apartment)] = []
         for r in rights.findall("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Right"):
             registration = r.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Registration")
-            doc_name = registration.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Name").text#.encode('utf-8')
+            doc_name = registration.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Name").text.encode('utf-8')
             share = registration.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ShareText")
             share = share.text if share is not None else '1'
             owner = r.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Owner")
             person = owner.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Person")
             fio = person.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}FIO")
-            fn = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}First").text#.encode('utf-8')
-            ln = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Surname").text#.encode('utf-8')
-            p = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Patronymic").text#.encode('utf-8')
+            fn = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}First").text.encode('utf-8')
+            ln = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Surname").text.encode('utf-8')
+            p = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Patronymic").text.encode('utf-8')
             if len(table[int(apartment)]) > 0: 
                 ap_num = ''
             else:
@@ -361,10 +361,10 @@ for k in sorted(table):
 OUT = HEAD + table_string + FOOTER
 
 out_file_name = "{}.xls".format(datetime.datetime.now().strftime('%d%m%Y%H%M%S'))
-outf = open(out_file_name, 'w', encoding='utf-8-sig')
-for i in OUT:
-    outf.write(i)
-outf.close()
+with open(out_file_name, mode='w', encoding='utf-8-sig') as outf:
+    for i in OUT:
+        outf.write(i)
+
 log.close()
 
 input("Press Enter to continue...")
