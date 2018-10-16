@@ -3,6 +3,7 @@
 
 import xml.etree.ElementTree as ET
 import sys, os, zipfile, datetime, platform
+from io import open 
 
 log = open('error.log', 'w')
 
@@ -317,39 +318,40 @@ table = {}
 for x in valid_files:
     print(x)
     try:
-        tree = ET.parse(x)
-        root = tree.getroot()
-        realty = root.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Realty")
-        reestr = root.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ReestrExtract")
-        flat = realty.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Flat")
-        area = float(flat.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Area").text)
-        address = flat.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Address")
-        apartment = address.find("{urn://x-artefacts-rosreestr-ru/commons/complex-types/address-output/4.0.1}Apartment").attrib['Value']
+        with open(x, mode='r', encoding='utf-8') as xml_file:
+            tree = ET.parse(xml_file)
+            root = tree.getroot()
+            realty = root.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Realty")
+            reestr = root.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ReestrExtract")
+            flat = realty.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Flat")
+            area = float(flat.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Area").text)
+            address = flat.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Address")
+            apartment = address.find("{urn://x-artefacts-rosreestr-ru/commons/complex-types/address-output/4.0.1}Apartment").attrib['Value']
 
-        #Собственники
-        rights = reestr.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ExtractObjectRight")
-        rights = rights.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ExtractObject")
-        rights = rights.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ObjectRight")
-        table[int(apartment)] = []
-        for r in rights.findall("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Right"):
-            registration = r.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Registration")
-            doc_name = registration.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Name").text.encode('utf-8')
-            share = registration.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ShareText")
-            share = share.text if share is not None else '1'
-            owner = r.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Owner")
-            person = owner.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Person")
-            fio = person.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}FIO")
-            fn = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}First").text.encode('utf-8')
-            ln = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Surname").text.encode('utf-8')
-            p = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Patronymic").text.encode('utf-8')
-            if len(table[int(apartment)]) > 0: 
-                ap_num = ''
-            else:
-                ap_num = apartment
-            table[int(apartment)].append({'apartment': ap_num, 
-                                         'fio': "{} {} {}".format(ln, fn, p), 
-                                         'doc': doc_name, 'share': eval(share), 
-                                         'area': area})
+            #Собственники
+            rights = reestr.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ExtractObjectRight")
+            rights = rights.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ExtractObject")
+            rights = rights.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ObjectRight")
+            table[int(apartment)] = []
+            for r in rights.findall("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Right"):
+                registration = r.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Registration")
+                doc_name = registration.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Name").text#.encode('utf-8')
+                share = registration.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ShareText")
+                share = share.text if share is not None else '1'
+                owner = r.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Owner")
+                person = owner.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Person")
+                fio = person.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}FIO")
+                fn = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}First").text#.encode('utf-8')
+                ln = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Surname").text#.encode('utf-8')
+                p = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Patronymic").text#.encode('utf-8')
+                if len(table[int(apartment)]) > 0: 
+                    ap_num = ''
+                else:
+                    ap_num = apartment
+                table[int(apartment)].append({'apartment': ap_num, 
+                                             'fio': "{} {} {}".format(ln, fn, p), 
+                                             'doc': doc_name, 'share': eval(share), 
+                                             'area': area})
     except Exception as e:
         log.write("{} is invalid. Error: {}\n".format(x, e))
 
