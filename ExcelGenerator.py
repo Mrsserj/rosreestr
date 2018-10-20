@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import xml.etree.ElementTree as ET
-import sys, os, zipfile, datetime, platform
+import sys, os, zipfile, datetime, platform, shutil
 from io import open 
 
 log = open('error.log', 'w')
@@ -10,7 +10,7 @@ zip_ext = '.zip'
 xml_ext = '.xml'
 sig_ext = '.sig'
 
-DIR = os.getcwd()
+DIR = '.'#os.getcwd()
 valid_files = []
 list_first_arch = []
 list_second_arch = []
@@ -298,14 +298,22 @@ print('='*80)
 print('Find files for convertation')
 print('='*80)
 
-for i in range(2):
-    for item in os.listdir(DIR): # loop through items in dir
-        if item.endswith(zip_ext): # check for ".zip" extension
-            file_name = os.path.abspath(item) # get full path of files
-            zip_ref = zipfile.ZipFile(file_name) # create zipfile object
-            zip_ref.extractall('./') # extract file to dir
-            zip_ref.close() # close file
-            os.remove(file_name) # delete zipped file
+for i in range(3):
+    for root, dirs, files in os.walk(DIR): 
+        path = root.split(os.sep)
+        for file in files:
+            #print path, file
+            if file.endswith(zip_ext): 
+                file_name = "{}/{}".format('/'.join(path), file)
+                print file_name
+                zip_ref = zipfile.ZipFile(file_name) # create zipfile object
+                zip_ref.extractall('./') # extract file to dir
+                zip_ref.close() # close file
+                os.remove(file_name) # delete zipped file
+
+for f in os.listdir(DIR):
+    if os.path.isdir(f):
+        shutil.rmtree(f)
 
 for f in os.listdir(DIR):
     if f.lower().endswith(xml_ext):
