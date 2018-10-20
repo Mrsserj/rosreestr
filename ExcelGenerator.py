@@ -1,4 +1,3 @@
-#!/bin/env python
 # -*- coding: utf-8 -*-
 
 import xml.etree.ElementTree as ET
@@ -17,7 +16,7 @@ list_first_arch = []
 list_second_arch = []
 
 
-HEAD = """<?xml version="1.0"?>
+HEAD = u"""<?xml version="1.0"?>
 <?mso-application progid="Excel.Sheet"?>
 <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
  xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -254,7 +253,7 @@ BODY = """   <Row>
    </Row>
 """
 
-FOOTER = """   <Row>
+FOOTER = u"""   <Row>
     <Cell ss:Index="6" ss:StyleID="s79"><Data ss:Type="Number">1021</Data></Cell>
     <Cell ss:StyleID="s73" ss:Formula="=RC[-1]*1000"><Data ss:Type="Number">1021000</Data></Cell>
     <Cell ss:StyleID="s71"/>
@@ -318,49 +317,48 @@ table = {}
 for x in valid_files:
     print(x)
     try:
-        with open(x, mode='r', encoding='utf-8') as xml_file:
-            tree = ET.parse(xml_file)
-            root = tree.getroot()
-            realty = root.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Realty")
-            reestr = root.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ReestrExtract")
-            flat = realty.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Flat")
-            area = float(flat.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Area").text)
-            address = flat.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Address")
-            apartment = address.find("{urn://x-artefacts-rosreestr-ru/commons/complex-types/address-output/4.0.1}Apartment").attrib['Value']
+        tree = ET.parse(x)
+        root = tree.getroot()
+        realty = root.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Realty")
+        reestr = root.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ReestrExtract")
+        flat = realty.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Flat")
+        area = float(flat.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Area").text)
+        address = flat.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Address")
+        apartment = address.find("{urn://x-artefacts-rosreestr-ru/commons/complex-types/address-output/4.0.1}Apartment").attrib['Value']
 
-            #Собственники
-            rights = reestr.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ExtractObjectRight")
-            rights = rights.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ExtractObject")
-            rights = rights.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ObjectRight")
-            table[int(apartment)] = []
-            for r in rights.findall("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Right"):
-                registration = r.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Registration")
-                doc_name = registration.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Name").text#.encode('utf-8')
-                share = registration.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ShareText")
-                share = share.text if share is not None else '1'
-                owner = r.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Owner")
-                person = owner.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Person")
-                fio = person.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}FIO")
-                fn = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}First").text#.encode('utf-8')
-                ln = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Surname").text#.encode('utf-8')
-                p = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Patronymic").text#.encode('utf-8')
-                if len(table[int(apartment)]) > 0: 
-                    ap_num = ''
-                else:
-                    ap_num = apartment
-                table[int(apartment)].append({'apartment': ap_num, 
-                                             'fio': "{} {} {}".format(ln, fn, p), 
-                                             'doc': doc_name, 'share': eval(share), 
-                                             'area': area})
+        #Собственники
+        rights = reestr.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ExtractObjectRight")
+        rights = rights.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ExtractObject")
+        rights = rights.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ObjectRight")
+        table[int(apartment)] = []
+        for r in rights.findall("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Right"):
+            registration = r.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Registration")
+            doc_name = registration.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Name").text.encode('utf-8')
+            share = registration.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}ShareText")
+            share = share.text if share is not None else '1'
+            owner = r.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Owner")
+            person = owner.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Person")
+            fio = person.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}FIO")
+            fn = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}First").text.encode('utf-8')
+            ln = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Surname").text.encode('utf-8')
+            p = fio.find("{urn://x-artefacts-rosreestr-ru/outgoing/kpoks/4.0.1}Patronymic").text.encode('utf-8')
+            if len(table[int(apartment)]) > 0: 
+                ap_num = ''
+            else:
+                ap_num = apartment
+            table[int(apartment)].append({'apartment': ap_num, 
+                                         'fio': "{} {} {}".format(ln, fn, p), 
+                                         'doc': doc_name, 'share': eval(share+'.0'), 
+                                         'area': area})
     except Exception as e:
-        log.write("{} is invalid. Error: {}\n".format(x, e))
+        log.write(u"{} is invalid. Error: {}\n".format(x.decode('utf-8'), e))
 
 table_string = ''
 for k in sorted(table):
     for j in table[k]:
         table_string += BODY.format(**j)
 
-OUT = HEAD + table_string + FOOTER
+OUT = HEAD + table_string.decode('utf-8') + FOOTER
 
 out_file_name = "{}.xls".format(datetime.datetime.now().strftime('%d%m%Y%H%M%S'))
 with open(out_file_name, mode='w', encoding='utf-8-sig') as outf:
@@ -369,7 +367,7 @@ with open(out_file_name, mode='w', encoding='utf-8-sig') as outf:
 
 log.close()
 
-input("Press Enter to continue...")
+raw_input('Press Enter to continue...')
 
 if platform.system() == 'Windows':
     os.system('start excel.exe {}'.format(out_file_name))
