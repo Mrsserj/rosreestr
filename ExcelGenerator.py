@@ -287,6 +287,7 @@ FOOTER = u"""   <Row>
 """
 
 table = []
+zipped_files = []
 
 def get_child_by_name(node, name):
     for n in node:
@@ -298,22 +299,25 @@ print('='*80)
 print('Find files for convertation')
 print('='*80)
 
+
 for i in range(3):
     for root, dirs, files in os.walk(DIR): 
         path = root.split(os.sep)
         for file in files:
             #print path, file
             if file.endswith(zip_ext): 
+                zipped_files.append(file)
                 file_name = "{}/{}".format('/'.join(path), file)
-                print file_name
                 zip_ref = zipfile.ZipFile(file_name) # create zipfile object
                 zip_ref.extractall('./') # extract file to dir
                 zip_ref.close() # close file
                 os.remove(file_name) # delete zipped file
 
-for f in os.listdir(DIR):
-    if os.path.isdir(f):
-        shutil.rmtree(f)
+for f in zipped_files:
+    dir = '.'.join(f.split('.')[:-1])
+    if os.path.isdir(dir):
+        print dir
+        shutil.rmtree(dir)
 
 for f in os.listdir(DIR):
     if f.lower().endswith(xml_ext):
