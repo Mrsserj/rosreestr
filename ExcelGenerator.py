@@ -316,7 +316,7 @@ for i in range(3):
 for f in zipped_files:
     dir = '.'.join(f.split('.')[:-1])
     if os.path.isdir(dir):
-        print dir
+        print(dir)
         shutil.rmtree(dir)
 
 for f in os.listdir(DIR):
