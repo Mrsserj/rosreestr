@@ -244,7 +244,7 @@ BODY = """   <Row>
     <Cell ss:StyleID="s69"><Data ss:Type="String">{doc}</Data></Cell>
     <Cell ss:StyleID="s70"><Data ss:Type="Number">{share}</Data></Cell>
     <Cell ss:StyleID="s71"><Data ss:Type="Number">{area}</Data></Cell>
-    <Cell ss:StyleID="s72" ss:Formula="=RC[-1]*RC[-2]"><Data ss:Type="Number">0</Data></Cell>
+    <Cell ss:StyleID="s72" ss:Formula="=RC[-1]*RC[-2]"></Cell>
     <Cell ss:StyleID="s73"/>
     <Cell ss:StyleID="s74"/>
     <Cell ss:StyleID="s75"/>
@@ -316,7 +316,7 @@ for i in range(3):
 for f in zipped_files:
     dir = '.'.join(f.split('.')[:-1])
     if os.path.isdir(dir):
-        print dir
+        print(dir)
         shutil.rmtree(dir)
 
 for f in os.listdir(DIR):
